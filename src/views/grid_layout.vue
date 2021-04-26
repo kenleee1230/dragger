@@ -1,22 +1,27 @@
 <template>
     <div>
+        <!-- <div class="hello">
+            <div id="chart1">jhkjgkufjy</div>
+        </div> -->
         <div>
-            <div class="layoutJSON">
+            <div class="title">可拖拽面板demo演示</div>
+            <!-- <div class="layoutJSON">
                 各组件位置信息 <code>[x, y, w, h]</code>:
                 <div class="columns">
                     <div class="layoutItem" v-for="item in layout" v-bind:key="item.i">
                         <b>{{ item.i }}</b>: [{{ item.x }}, {{ item.y }}, {{ item.w }}, {{ item.h }}]
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
-        <el-button type='primary' @click='clearLayout'>重置位置信息</el-button>
-        <el-button type='primary' @click='getCookie'>获取面板位置信息</el-button>
-        <el-button type='primary' @click='setCookie'>保存面板信息</el-button>
-        <br/>
-        <div @drag="drag" @dragend="dragend" class="droppable-element" draggable="true"
-             unselectable="on">拖动到合适位置松开添加组件</div>
-        <div id="content">
+        <div class="btns">
+            <span class="sub-title">工具栏</span>
+            <el-button type='primary' @click='clearLayout'>重置位置信息</el-button>
+            <el-button type='primary' @click='setCookie'>保存面板信息</el-button>
+            <el-button type='primary' @drag="drag" @dragend="dragend" class="droppable-element" draggable="true"
+            unselectable="on">拖动到合适位置松开添加组件</el-button>
+        </div>
+        <div>
             <grid-layout ref="gridlayout" :layout.sync="layout"
                          :col-num="12"
                          :row-height="30"
@@ -32,7 +37,9 @@
                            :h="item.h"
                            :i="item.i"
                 >
-                    <img src="../assets/ultraman.png">
+                    <!-- <echarts></echarts> -->
+                    <el-image :src="urls[item.i]" lazy></el-image>
+                    <!-- <img src="../assets/1.png"> -->
                     <span class="text">{{ item.i }}</span>
                 </grid-item>
             </grid-layout>
@@ -42,25 +49,68 @@
 
 <script>
 // import ElementUI from "element-ui"
-import {GridLayout, GridItem} from "vue-grid-layout"
+// import echarts from '../components/echarts'
+import {GridLayout, GridItem} from "vue-grid-layout";
+import ultraman from "../assets/1.png"
 let mouseXY = {"x": null, "y": null};
 let DragPos = {"x": null, "y": null, "w": 1, "h": 1, "i": null};
 export default {
     components: {
         GridLayout,
-        GridItem
+        GridItem,
+        // echarts
     },
     data() {
         return {
             layout: [],
+            orgOptions: {
+            //     xAxis: {
+            //     type: 'category',
+            //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            // },
+            // yAxis: {
+            //     type: 'value'
+            // },
+            // series: [{
+            //     data: [820, 932, 901, 934, 1290, 1330, 1320],
+            //     type: 'line',
+            //     smooth: true
+            // }]
+            },
+            urls: [
+                ultraman,
+                'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+                'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
+                'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
+                'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
+                'https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg',
+                'https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg'
+            ]
         }
     },
     mounted() {
+        // this.$chart.line1('chart1');
         document.addEventListener("dragover", function (e) {
             mouseXY.x = e.clientX;
             mouseXY.y = e.clientY;
         }, false);
         this.checkCookie();
+        // this.orgOptions = {
+        //     xAxis: {
+        //         type: 'category',
+        //         data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        //     },
+        //     yAxis: {
+        //         type: 'value'
+        //     },
+        //     series: [{
+        //         data: [820, 932, 901, 934, 1290, 1330, 1320],
+        //         type: 'line',
+        //         smooth: true
+        //     }]
+        // }
+        // console.log("orgOptions mounted")
+        // console.log(this.orgOptions)
     },
     whatch() {
       //pass
@@ -155,6 +205,7 @@ export default {
         },
         clearLayout: function () {
           this.delCookie();
+          // to do 刷新页面
         },
         // eslint-disable-next-line no-unused-vars
         drag: function (e) {
@@ -227,13 +278,19 @@ export default {
 </script>
 
 <style scoped>
+.title {
+    /*to do */
+}
+.sub-title {
+    margin-right: 15px;
+}
 .droppable-element {
-    width: 150px;
-    text-align: center;
-    background: #fdd;
-    border: 1px solid black;
-    margin: 10px 0;
-    padding: 10px;
+    /* width: 200px;
+    text-align: center; */
+    /* background: #fdd; */
+    /* border: 1px solid black; */
+    /* margin: 10px 0; */
+    /* padding: 10px; */
 }
 .vue-grid-layout {
     background: #eee;
@@ -300,5 +357,9 @@ export default {
     -moz-columns: 120px;
     -webkit-columns: 120px;
     columns: 120px;
+}
+#chart1 {
+    width: 300px;
+    height: 300px;
 }
 </style>

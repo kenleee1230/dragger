@@ -6,14 +6,14 @@
 
 <script>
   import gridLayout from './grid_layout'
- 
   export default {
     data() {
       return {
       }
     },
     components: {
-      gridLayout
+      gridLayout,
+      // echarts
     },
   }
 </script>
