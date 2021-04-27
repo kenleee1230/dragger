@@ -1,8 +1,17 @@
 <template>
-    <div>
+    <div class="container">
         <!-- <div class="hello">
             <div id="chart1">jhkjgkufjy</div>
         </div> -->
+        <div class="btns">
+            <span class="sub-title">工具栏</span>
+            <el-button-group>
+                <el-button round size='small' type='primary' @click='clearLayout'>重置位置信息</el-button>
+                <el-button round size='small' type='primary' @click='setCookie'>保存面板信息</el-button>
+                <el-button round size='small' type='primary' @drag="drag" @dragend="dragend" class="droppable-element" draggable="true"
+                unselectable="on">拖动到合适位置松开添加组件</el-button>
+            </el-button-group>
+        </div>
         <div>
             <div class="title">可拖拽面板demo演示</div>
             <!-- <div class="layoutJSON">
@@ -14,13 +23,6 @@
                 </div>
             </div> -->
         </div>
-        <div class="btns">
-            <span class="sub-title">工具栏</span>
-            <el-button type='primary' @click='clearLayout'>重置位置信息</el-button>
-            <el-button type='primary' @click='setCookie'>保存面板信息</el-button>
-            <el-button type='primary' @drag="drag" @dragend="dragend" class="droppable-element" draggable="true"
-            unselectable="on">拖动到合适位置松开添加组件</el-button>
-        </div>
         <div>
             <grid-layout ref="gridlayout" :layout.sync="layout"
                          :col-num="12"
@@ -28,9 +30,9 @@
                          :is-draggable="true"
                          :is-resizable="true"
                          :vertical-compact="true"
-                         :use-css-transforms="true"
+                         
             >
-                <grid-item :key="item.i" v-for="item in layout"
+                <grid-item :key="item.i" v-for="item in layout" class="grid-layout-item"
                            :x="item.x"
                            :y="item.y"
                            :w="item.w"
@@ -48,10 +50,21 @@
 </template>
 
 <script>
-// import ElementUI from "element-ui"
 // import echarts from '../components/echarts'
 import {GridLayout, GridItem} from "vue-grid-layout";
-import ultraman from "../assets/1.png"
+import pic1 from "../assets/1.png"
+import pic2 from "../assets/2.png"
+import pic3 from "../assets/3.png"
+import pic4 from "../assets/4.png"
+import pic5 from "../assets/5.png"
+import pic6 from "../assets/6.png"
+import pic7 from "../assets/7.png"
+import pic8 from "../assets/8.png"
+import pic9 from "../assets/9.png"
+import pic10 from "../assets/10.png"
+import pic11 from "../assets/11.png"
+import pic12 from "../assets/12.png"
+import { Msgbox, Message } from 'element-ui'
 let mouseXY = {"x": null, "y": null};
 let DragPos = {"x": null, "y": null, "w": 1, "h": 1, "i": null};
 export default {
@@ -60,31 +73,47 @@ export default {
         GridItem,
         // echarts
     },
+    setup() {
+      return {
+        open() {
+          Msgbox
+            .confirm('已重置位置信息，是否重新渲染？', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            })
+            .then(() => {
+              Message({
+                type: 'success',
+                message: '渲染成功!'
+              })
+            })
+            .catch(() => {
+              Message({
+                type: 'info',
+                message: '暂不刷新'
+              })
+            })
+        }
+      }
+    },
     data() {
         return {
             layout: [],
-            orgOptions: {
-            //     xAxis: {
-            //     type: 'category',
-            //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-            // },
-            // yAxis: {
-            //     type: 'value'
-            // },
-            // series: [{
-            //     data: [820, 932, 901, 934, 1290, 1330, 1320],
-            //     type: 'line',
-            //     smooth: true
-            // }]
-            },
+            orgOptions: {},
             urls: [
-                ultraman,
-                'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
-                'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
-                'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
-                'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
-                'https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg',
-                'https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg'
+                pic1,
+                pic2,
+                pic3,
+                pic4,
+                pic5,
+                pic6,
+                pic7,
+                pic8,
+                pic9,
+                pic10,
+                pic11,
+                pic12
             ]
         }
     },
@@ -95,22 +124,6 @@ export default {
             mouseXY.y = e.clientY;
         }, false);
         this.checkCookie();
-        // this.orgOptions = {
-        //     xAxis: {
-        //         type: 'category',
-        //         data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        //     },
-        //     yAxis: {
-        //         type: 'value'
-        //     },
-        //     series: [{
-        //         data: [820, 932, 901, 934, 1290, 1330, 1320],
-        //         type: 'line',
-        //         smooth: true
-        //     }]
-        // }
-        // console.log("orgOptions mounted")
-        // console.log(this.orgOptions)
     },
     whatch() {
       //pass
@@ -120,6 +133,10 @@ export default {
     created() {
     },
     methods: {
+        initialize: function () {
+            let $this = this;
+            $this.$store.commit("SET_LAYOUT", this.layout);
+        },
         getCookie: function () {
           var cookie1 = document.cookie.split('; ');
           console.log('getCookie entered');
@@ -147,31 +164,66 @@ export default {
           let expires = "expires" + d.toGMTString();
           if(this.layout != ''){
             this.delCookie();
+            console.log(this.layout);
             for(let i = 0; i < this.layout.length; i++) {
-              // console.log("添加中")
+              console.log("添加中")
               document.cookie = 'layout_'+ i + '_x=' + this.layout[i]['x'] + expires;
               document.cookie = 'layout_'+ i + '_y=' + this.layout[i]['y'] + expires;
               document.cookie = 'layout_'+ i + '_w=' + this.layout[i]['w'] + expires;
               document.cookie = 'layout_'+ i + '_h=' + this.layout[i]['h'] + expires;
               document.cookie = 'layout_'+ i + '=' + this.layout[i]['i'] + expires;
-              // console.log("添加成功")
+              console.log("添加成功")
             }
+            console.log(document.cookie);
           } else {
             console.log("layout is empty")
           }
         },
+        setLayout: function () {
+          let cookie1 = document.cookie.split('; ');
+          let layoutLength = (cookie1.length-2)/5;
+          for(let i = 0; i < layoutLength; i++) {
+            // console.log("添加中")
+            let c0 = cookie1[i*5+2].trim();
+            let c1 = cookie1[i*5+3].trim();
+            let c2 = cookie1[i*5+4].trim();
+            let c3 = cookie1[i*5+5].trim();
+            this.layout[i]['x'] = parseInt(c0.substring(c0.indexOf('=')+1,c0.indexOf('e')));
+            this.layout[i]['y'] = parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
+            this.layout[i]['w'] = parseInt(c2.substring(c2.indexOf('=')+1,c2.indexOf('e')));
+            this.layout[i]['h'] = parseInt(c3.substring(c3.indexOf('=')+1,c3.indexOf('e')));
+            this.layout[i]['i'] = String(i);
+            // console.log("添加成功")
+          }
+          console.log(this.layout);
+        },
         checkCookie: function () {
           //检查cookie中是否有layout数据，如果有就读取，没有就自己初始化
+          console.log('checkCookie');
           let cookie1 = document.cookie.split('; ');
+          console.log(cookie1);
           let ifHaveLayout = 0
           //cookie1.length-2>0,表示cookie中有layout的值，下面做读取cookie中layout的值
-          if(cookie1.length-2 > 0){
+          if(cookie1.length-5 > 0){
+            // console.log("有cookie,当前的layout值如下")
+            // console.log(this.layout)
+            // console.log("存放cookie值到layout中前，cookie值："+ document.cookie);
+            this.layout = [];
             ifHaveLayout = 1
-            for(let i=0; i<(cookie1.length-2)/5; i++) {
-              let c0 = cookie1[i*5+2].trim();
-              let c1 = cookie1[i*5+3].trim();
-              let c2 = cookie1[i*5+4].trim();
-              let c3 = cookie1[i*5+5].trim();
+            for(let i=0; i<cookie1.length;i++) {
+                let ca = cookie1[i].trim();
+                if(ca.indexOf('layout_')===0){
+                    var layout_index_in_cookie = i;
+                    // console.log(layout_index_in_cookie);
+                    break
+                }
+            }
+            for(let i=0; i<(cookie1.length-layout_index_in_cookie)/5; i++) {
+              let c0 = cookie1[i*5+1].trim();
+              let c1 = cookie1[i*5+2].trim();
+              let c2 = cookie1[i*5+3].trim();
+              let c3 = cookie1[i*5+4].trim();
+              console.log("c0 is " + c0);
               this.layout.push({
                 x: parseInt(c0.substring(c0.indexOf('=')+1,c0.indexOf('e'))),
                 y: parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e'))),
@@ -180,13 +232,16 @@ export default {
                 i: String(i),
               })
             }
+            // this.setLayout();
+            console.log("读取完成，cookie值："+ document.cookie);
+            console.log("layout值", this.layout);
           }
           if (!ifHaveLayout) {
             this.layout = [
-                {"x": 0, "y": 0, "w": 4, "h": 9, "i": "0"},
-                {"x": 4, "y": 0, "w": 4, "h": 9, "i": "1"},
-                {"x": 2, "y": 9, "w": 3, "h": 7, "i": "2"},
-                {"x": 8, "y": 8, "w": 3, "h": 6, "i": "3"},
+                {"x": 4, "y": 0, "w": 3, "h": 7, "i": "0"},
+                {"x": 4, "y": 7, "w": 4, "h": 9, "i": "1"},
+                {"x": 8, "y": 8, "w": 4, "h": 10, "i": "2"},
+                {"x": 0, "y": 0, "w": 4, "h": 10, "i": "3"},
                 {"x": 8, "y": 0, "w": 4, "h": 8, "i": "4"},
             ];
             this.setCookie();
@@ -205,7 +260,7 @@ export default {
         },
         clearLayout: function () {
           this.delCookie();
-          // to do 刷新页面
+          window.location.reload();
         },
         // eslint-disable-next-line no-unused-vars
         drag: function (e) {
@@ -277,26 +332,39 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.container {
+    // background-color:#eee;
+    width:100%;
+}
 .title {
-    /*to do */
+    font-size: 28px;
+    font-weight: bold;
+    margin: 20px;
+    text-align: center;
 }
-.sub-title {
-    margin-right: 15px;
+.btns {
+    background-color: rgb(45, 81, 105);
+    width: 100%;
+    text-align: left;
+    padding-left: 30px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    .sub-title {
+        color: white;
+        font-style: bold;
+        margin-right: 15px;
+        font-size: 16px;
+    }
 }
-.droppable-element {
-    /* width: 200px;
-    text-align: center; */
-    /* background: #fdd; */
-    /* border: 1px solid black; */
-    /* margin: 10px 0; */
-    /* padding: 10px; */
-}
+
 .vue-grid-layout {
     background: #eee;
+    touch-action: none;
+    box-sizing: border-box;
 }
 .vue-grid-item:not(.vue-grid-placeholder) {
-    background: #ccc;
+    background: rgb(255, 255, 255);
     border: 1px solid black;
 }
 .vue-grid-item .resizing {
