@@ -8,11 +8,14 @@
             <el-button-group>
                 <el-button round size='small' type='primary' @click='clearLayout'>重置位置信息</el-button>
                 <el-button round size='small' type='primary' @click='setCookie'>保存面板信息</el-button>
-                <el-button round size='small' type='primary' @drag="drag" @dragend="dragend" draggable="true"
-                unselectable="on">拖动到合适位置松开添加组件</el-button>
+                <el-button round size='small' type='primary' >
+                    <div class="droppable-element" @drag="drag" @dragend="dragend" draggable="true"
+                    unselectable="on">
+                拖动到合适位置松开添加组件</div>
+                </el-button>
             </el-button-group>
-            
         </div>
+        
         <div>
             <div class="title">可拖拽面板demo演示</div>
             <!-- <div class="layoutJSON">
@@ -24,14 +27,14 @@
                 </div>
             </div> -->
         </div>
-        <div>
+        <div id="content">
             <grid-layout ref="gridlayout" :layout.sync="layout"
                          :col-num="12"
                          :row-height="30"
                          :is-draggable="true"
                          :is-resizable="true"
                          :vertical-compact="true"
-                         
+                         :use-css-transforms="true"
             >
                 <grid-item :key="item.i" v-for="item in layout" class="grid-layout-item"
                            :x="item.x"
@@ -44,6 +47,7 @@
                     <el-image :src="urls[item.i]" lazy></el-image>
                     <!-- <img src="../assets/1.png"> -->
                     <span class="text">{{ item.i }}</span>
+                    <!-- <span class="remove" @click="removeItem(item.i)">x</span> -->
                 </grid-item>
             </grid-layout>
         </div>
@@ -65,9 +69,8 @@ import pic9 from "../assets/9.png"
 import pic10 from "../assets/10.png"
 import pic11 from "../assets/11.png"
 import pic12 from "../assets/12.png"
-import { Msgbox, Message } from 'element-ui'
 let mouseXY = {"x": null, "y": null};
-let DragPos = {"x": null, "y": null, "w": 1, "h": 1, "i": null};
+let DragPos = {"x": null, "y": null, "w": 3, "h": 7, "i": null};
 export default {
     components: {
         GridLayout,
@@ -75,28 +78,7 @@ export default {
         // echarts
     },
     setup() {
-      return {
-        open() {
-          Msgbox
-            .confirm('已重置位置信息，是否重新渲染？', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            })
-            .then(() => {
-              Message({
-                type: 'success',
-                message: '渲染成功!'
-              })
-            })
-            .catch(() => {
-              Message({
-                type: 'info',
-                message: '暂不刷新'
-              })
-            })
-        }
-      }
+      return {}
     },
     data() {
         return {
@@ -263,7 +245,7 @@ export default {
                 try {
                     this.$refs.gridlayout.$children[this.layout.length].$refs.item.style.display = "none";
                 } catch {
-                  //pass
+                    //pass
                 }
                 let el = this.$refs.gridlayout.$children[index];
                 el.dragging = {"top": mouseXY.y - parentRect.top, "left": mouseXY.x - parentRect.left};
@@ -289,24 +271,28 @@ export default {
             }
             if (mouseInGrid === true) {
                 alert(`Dropped element props:\n${JSON.stringify(DragPos, ['x', 'y', 'w', 'h'], 2)}`);
-                this.$refs.gridlayout.dragEvent('dragend', 'drop', DragPos.x, DragPos.y, 1, 1);
+                // this.$refs.gridlayout.dragEvent('dragend', 'drop', DragPos.x, DragPos.y, 4, 4);
                 this.layout = this.layout.filter(obj => obj.i !== 'drop');
                 // UNCOMMENT below if you want to add a grid-item
                 this.layout.push({
                     x: DragPos.x,
                     y: DragPos.y,
-                    w: 1,
-                    h: 3,
+                    w: DragPos.w,
+                    h: DragPos.h,
                     i: DragPos.i,
                 });
                 this.$refs.gridLayout.dragEvent('dragend', DragPos.i, DragPos.x,DragPos.y,1,1);
                 try {
                     this.$refs.gridLayout.$children[this.layout.length].$refs.item.style.display="block";
                 } catch {
-                  //pass
+                    //pass
                 }
             }
         },
+        // removeItem: function (val) {
+        //     const index = this.layout.map(item => item.i).indexOf(val);
+        //     this.layout.splice(index, 1);
+        // },
     }
 }
 </script>
@@ -336,7 +322,18 @@ export default {
         font-size: 16px;
     }
 }
-
+.draggable-box {
+    color: black;
+    background-color: blue;
+    height: 60px;
+    width:180px;
+}
+.remove {
+    position: absolute;
+    right: 2px;
+    top: 0;
+    cursor: pointer;
+}
 .vue-grid-layout {
     background: #eee;
     touch-action: none;
