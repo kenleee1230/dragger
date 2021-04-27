@@ -137,46 +137,25 @@ export default {
             let $this = this;
             $this.$store.commit("SET_LAYOUT", this.layout);
         },
-        getCookie: function () {
-          var cookie1 = document.cookie.split('; ');
-          console.log('getCookie entered');
-          for(let i=0; i<(cookie1.length-2)/5; i++) {
-            // console.log("checkCookie进入循环")
-            let c0 = cookie1[i*5+2].trim();
-            let c1 = cookie1[i*5+3].trim();
-            let c2 = cookie1[i*5+4].trim();
-            let c3 = cookie1[i*5+5].trim();
-            // console.log(c0.indexOf('='));
-            console.log(c0.substring(c0.indexOf('=')+1,c0.indexOf('e')));
-            console.log(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
-            console.log(c2.substring(c2.indexOf('=')+1,c2.indexOf('e')));
-            console.log(c3.substring(c3.indexOf('=')+1,c3.indexOf('e')));
-            this.layout[i]['x'] = parseInt(c0.substring(c0.indexOf('=')+1,c0.indexOf('e')));
-            this.layout[i]['y'] = parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
-            this.layout[i]['w'] = parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
-            this.layout[i]['h'] = parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
-            this.layout[i]['i'] = String(i)
-          }
-        },
         setCookie: function () {
           let d = new Date();
           d.setTime(d.getTime() + (7*24*60*60*1000));
           let expires = "expires" + d.toGMTString();
           if(this.layout != ''){
             this.delCookie();
-            console.log(this.layout);
+            // console.log(this.layout);
             for(let i = 0; i < this.layout.length; i++) {
-              console.log("添加中")
+            //   console.log("添加中")
               document.cookie = 'layout_'+ i + '_x=' + this.layout[i]['x'] + expires;
               document.cookie = 'layout_'+ i + '_y=' + this.layout[i]['y'] + expires;
               document.cookie = 'layout_'+ i + '_w=' + this.layout[i]['w'] + expires;
               document.cookie = 'layout_'+ i + '_h=' + this.layout[i]['h'] + expires;
               document.cookie = 'layout_'+ i + '=' + this.layout[i]['i'] + expires;
-              console.log("添加成功")
+            //   console.log("添加成功")
             }
-            console.log(document.cookie);
+            // console.log(document.cookie);
           } else {
-            console.log("layout is empty")
+            window.alert("layout is empty")
           }
         },
         setLayout: function () {
@@ -195,13 +174,13 @@ export default {
             this.layout[i]['i'] = String(i);
             // console.log("添加成功")
           }
-          console.log(this.layout);
+        //   console.log(this.layout);
         },
         checkCookie: function () {
           //检查cookie中是否有layout数据，如果有就读取，没有就自己初始化
-          console.log('checkCookie');
+        //   console.log('checkCookie');
           let cookie1 = document.cookie.split('; ');
-          console.log(cookie1);
+        //   console.log(cookie1);
           let ifHaveLayout = 0
           //cookie1.length-2>0,表示cookie中有layout的值，下面做读取cookie中layout的值
           if(cookie1.length-5 > 0){
@@ -223,7 +202,7 @@ export default {
               let c1 = cookie1[i*5+2].trim();
               let c2 = cookie1[i*5+3].trim();
               let c3 = cookie1[i*5+4].trim();
-              console.log("c0 is " + c0);
+            //   console.log("c0 is " + c0);
               this.layout.push({
                 x: parseInt(c0.substring(c0.indexOf('=')+1,c0.indexOf('e'))),
                 y: parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e'))),
@@ -233,8 +212,8 @@ export default {
               })
             }
             // this.setLayout();
-            console.log("读取完成，cookie值："+ document.cookie);
-            console.log("layout值", this.layout);
+            // console.log("读取完成，cookie值："+ document.cookie);
+            // console.log("layout值", this.layout);
           }
           if (!ifHaveLayout) {
             this.layout = [
@@ -268,7 +247,6 @@ export default {
             let mouseInGrid = false;
             if (((mouseXY.x > parentRect.left) && (mouseXY.x < parentRect.right)) && ((mouseXY.y > parentRect.top) && (mouseXY.y < parentRect.bottom))) {
                 mouseInGrid = true;
-                console.log
             }
             if (mouseInGrid === true && (this.layout.findIndex(item => item.i === 'drop')) === -1) {
                 this.layout.push({
