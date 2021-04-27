@@ -7,7 +7,7 @@
                 <el-button round size='small' type='primary' @click='setCookie'>保存面板信息</el-button>
                 <el-button round size="small" type="primary" @click="addItem">添加组件</el-button>
             </el-button-group>
-            <div class="title">可拖拽面板demo演示</div>
+            <div class="title">可拖拽面板demo演示<span class="about-us" @click="getAboutUs">  | 关于我们 </span></div>
         </div>
         <!-- <div>
             <div class="layoutJSON">
@@ -185,6 +185,9 @@ export default {
           this.delCookie();
           window.location.reload();
         },
+        getAboutUs: function () {
+            this.$router.replace('/about');
+        },
         addItem: function () {
             this.layout.push({
                 x: (this.layout.length * 2) % (this.colNum || 12),
@@ -219,6 +222,11 @@ body {
     text-align:left;
     padding-left:2%;
     float:left;
+    .about-us {
+        font-size: 18px;
+        font-weight: normal;
+        padding-left: 10px;
+    }
 }
 .btns {
     background-color: rgb(45, 81, 105);
