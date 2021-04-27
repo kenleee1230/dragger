@@ -9,9 +9,9 @@
                 <el-button round size='small' type='primary' @click='clearLayout'>重置位置信息</el-button>
                 <el-button round size='small' type='primary' @click='setCookie'>保存面板信息</el-button>
                 <el-button round size='small' type='primary' >
-                    <div class="droppable-element" @drag="drag" @dragend="dragend" draggable="true"
+                    <span class="droppable-element" @drag="drag" @dragend="dragend" draggable="true"
                     unselectable="on">
-                拖动到合适位置松开添加组件</div>
+                拖动到合适位置松开添加组件</span>
                 </el-button>
             </el-button-group>
         </div>
@@ -44,10 +44,10 @@
                            :i="item.i"
                 >
                     <!-- <echarts></echarts> -->
-                    <el-image :src="urls[item.i]" lazy></el-image>
+                    <el-image :src="urls[item.p]" lazy></el-image>
                     <!-- <img src="../assets/1.png"> -->
                     <span class="text">{{ item.i }}</span>
-                    <!-- <span class="remove" @click="removeItem(item.i)">x</span> -->
+                    <span class="remove" @click="removeItem(item.i)">x</span>
                 </grid-item>
             </grid-layout>
         </div>
@@ -70,7 +70,7 @@ import pic10 from "../assets/10.png"
 import pic11 from "../assets/11.png"
 import pic12 from "../assets/12.png"
 let mouseXY = {"x": null, "y": null};
-let DragPos = {"x": null, "y": null, "w": 3, "h": 7, "i": null};
+let DragPos = {"x": null, "y": null, "w": 3, "h": 7, "i": null, "p": null};
 export default {
     components: {
         GridLayout,
@@ -134,6 +134,7 @@ export default {
               document.cookie = 'layout_'+ i + '_w=' + this.layout[i]['w'] + expires;
               document.cookie = 'layout_'+ i + '_h=' + this.layout[i]['h'] + expires;
               document.cookie = 'layout_'+ i + '=' + this.layout[i]['i'] + expires;
+              document.cookie = 'layout_'+ i + '_p=' + this.layout[i]['p'] + expires;
             //   console.log("添加成功")
             }
             // console.log(document.cookie);
@@ -143,13 +144,13 @@ export default {
         },
         setLayout: function () {
           let cookie1 = document.cookie.split('; ');
-          let layoutLength = (cookie1.length-2)/5;
+          let layoutLength = (cookie1.length-2)/6;
           for(let i = 0; i < layoutLength; i++) {
             // console.log("添加中")
-            let c0 = cookie1[i*5+2].trim();
-            let c1 = cookie1[i*5+3].trim();
-            let c2 = cookie1[i*5+4].trim();
-            let c3 = cookie1[i*5+5].trim();
+            let c0 = cookie1[i*6+2].trim();
+            let c1 = cookie1[i*6+3].trim();
+            let c2 = cookie1[i*6+4].trim();
+            let c3 = cookie1[i*6+5].trim();
             this.layout[i]['x'] = parseInt(c0.substring(c0.indexOf('=')+1,c0.indexOf('e')));
             this.layout[i]['y'] = parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
             this.layout[i]['w'] = parseInt(c2.substring(c2.indexOf('=')+1,c2.indexOf('e')));
@@ -166,7 +167,7 @@ export default {
         //   console.log(cookie1);
           let ifHaveLayout = 0
           //cookie1.length-2>0,表示cookie中有layout的值，下面做读取cookie中layout的值
-          if(cookie1.length-5 > 0){
+          if(cookie1.length-6 > 0){
             // console.log("有cookie,当前的layout值如下")
             // console.log(this.layout)
             // console.log("存放cookie值到layout中前，cookie值："+ document.cookie);
@@ -180,11 +181,12 @@ export default {
                     break
                 }
             }
-            for(let i=0; i<(cookie1.length-layout_index_in_cookie)/5; i++) {
-              let c0 = cookie1[i*5+layout_index_in_cookie].trim();
-              let c1 = cookie1[i*5+layout_index_in_cookie+1].trim();
-              let c2 = cookie1[i*5+layout_index_in_cookie+2].trim();
-              let c3 = cookie1[i*5+layout_index_in_cookie+3].trim();
+            for(let i=0; i<(cookie1.length-layout_index_in_cookie)/6; i++) {
+              let c0 = cookie1[i*6+layout_index_in_cookie].trim();
+              let c1 = cookie1[i*6+layout_index_in_cookie+1].trim();
+              let c2 = cookie1[i*6+layout_index_in_cookie+2].trim();
+              let c3 = cookie1[i*6+layout_index_in_cookie+3].trim();
+              let c4 = cookie1[i*6+layout_index_in_cookie+5].trim();
             //   console.log("c0 is " + c0);
               this.layout.push({
                 x: parseInt(c0.substring(c0.indexOf('=')+1,c0.indexOf('e'))),
@@ -192,6 +194,7 @@ export default {
                 w: parseInt(c2.substring(c2.indexOf('=')+1,c2.indexOf('e'))),
                 h: parseInt(c3.substring(c3.indexOf('=')+1,c3.indexOf('e'))),
                 i: String(i),
+                p: parseInt(c4.substring(c4.indexOf('=')+1,c4.indexOf('e'))),
               })
             }
             // this.setLayout();
@@ -200,11 +203,11 @@ export default {
           }
           if (!ifHaveLayout) {
             this.layout = [
-                {"x": 4, "y": 0, "w": 3, "h": 7, "i": "0"},
-                {"x": 4, "y": 7, "w": 4, "h": 9, "i": "1"},
-                {"x": 8, "y": 8, "w": 4, "h": 10, "i": "2"},
-                {"x": 0, "y": 0, "w": 4, "h": 10, "i": "3"},
-                {"x": 8, "y": 0, "w": 4, "h": 8, "i": "4"},
+                {"x": 4, "y": 0, "w": 3, "h": 7, "i": "0", "p": 1,},
+                {"x": 4, "y": 7, "w": 4, "h": 9, "i": "1", "p": 2,},
+                {"x": 8, "y": 8, "w": 4, "h": 10, "i": "2", "p": 3},
+                {"x": 0, "y": 0, "w": 4, "h": 10, "i": "3", "p": 4},
+                {"x": 8, "y": 0, "w": 4, "h": 8,  "i": "4", "p": 5},
             ];
             this.setCookie();
           }
@@ -218,6 +221,7 @@ export default {
             document.cookie = "layout_"+i+"_w=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             document.cookie = "layout_"+i+"_h=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             document.cookie = "layout_"+i+"=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = "layout_"+i+"_p=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           }
         },
         clearLayout: function () {
@@ -238,6 +242,7 @@ export default {
                     w: 1,
                     h: 1,
                     i: 'drop',
+                    p: 'drop',
                 });
             }
             let index = this.layout.findIndex(item => item.i === 'drop');
@@ -253,6 +258,7 @@ export default {
                 if (mouseInGrid === true) {
                     this.$refs.gridlayout.dragEvent('dragstart', 'drop', new_pos.x, new_pos.y, 1, 1);
                     DragPos.i = String(index);
+                    DragPos.p = String(index);
                     DragPos.x = this.layout[index].x;
                     DragPos.y = this.layout[index].y;
                 }
@@ -270,7 +276,7 @@ export default {
                 mouseInGrid = true;
             }
             if (mouseInGrid === true) {
-                alert(`Dropped element props:\n${JSON.stringify(DragPos, ['x', 'y', 'w', 'h'], 2)}`);
+                alert(`Dropped element props:\n${JSON.stringify(DragPos, ['x', 'y', 'w', 'h', 'p'], 2)}`);
                 // this.$refs.gridlayout.dragEvent('dragend', 'drop', DragPos.x, DragPos.y, 4, 4);
                 this.layout = this.layout.filter(obj => obj.i !== 'drop');
                 // UNCOMMENT below if you want to add a grid-item
@@ -280,6 +286,7 @@ export default {
                     w: DragPos.w,
                     h: DragPos.h,
                     i: DragPos.i,
+                    p: DragPos.p,
                 });
                 this.$refs.gridLayout.dragEvent('dragend', DragPos.i, DragPos.x,DragPos.y,1,1);
                 try {
@@ -289,10 +296,10 @@ export default {
                 }
             }
         },
-        // removeItem: function (val) {
-        //     const index = this.layout.map(item => item.i).indexOf(val);
-        //     this.layout.splice(index, 1);
-        // },
+        removeItem: function (val) {
+            const index = this.layout.map(item => item.i).indexOf(val);
+            this.layout.splice(index, 1);
+        },
     }
 }
 </script>
@@ -322,11 +329,8 @@ export default {
         font-size: 16px;
     }
 }
-.draggable-box {
-    color: black;
-    background-color: blue;
+.droppable-element {
     height: 60px;
-    width:180px;
 }
 .remove {
     position: absolute;
