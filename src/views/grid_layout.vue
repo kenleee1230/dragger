@@ -8,9 +8,10 @@
             <el-button-group>
                 <el-button round size='small' type='primary' @click='clearLayout'>重置位置信息</el-button>
                 <el-button round size='small' type='primary' @click='setCookie'>保存面板信息</el-button>
-                <el-button round size='small' type='primary' @drag="drag" @dragend="dragend" class="droppable-element" draggable="true"
+                <el-button round size='small' type='primary' @drag="drag" @dragend="dragend" draggable="true"
                 unselectable="on">拖动到合适位置松开添加组件</el-button>
             </el-button-group>
+            
         </div>
         <div>
             <div class="title">可拖拽面板demo演示</div>
@@ -198,10 +199,10 @@ export default {
                 }
             }
             for(let i=0; i<(cookie1.length-layout_index_in_cookie)/5; i++) {
-              let c0 = cookie1[i*5+1].trim();
-              let c1 = cookie1[i*5+2].trim();
-              let c2 = cookie1[i*5+3].trim();
-              let c3 = cookie1[i*5+4].trim();
+              let c0 = cookie1[i*5+layout_index_in_cookie].trim();
+              let c1 = cookie1[i*5+layout_index_in_cookie+1].trim();
+              let c2 = cookie1[i*5+layout_index_in_cookie+2].trim();
+              let c3 = cookie1[i*5+layout_index_in_cookie+3].trim();
             //   console.log("c0 is " + c0);
               this.layout.push({
                 x: parseInt(c0.substring(c0.indexOf('=')+1,c0.indexOf('e'))),
