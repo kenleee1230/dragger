@@ -1,21 +1,24 @@
 <template>
-    <div>
-        <div>
+    <div class="container">
+        <div class="btns">
+            <!-- <span class="sub-title">工具栏</span> -->
+            <el-button-group>
+                <el-button round size='small' type='primary' @click='clearLayout'>重置面板信息</el-button>
+                <el-button round size='small' type='primary' @click='setCookie'>保存面板信息</el-button>
+                <el-button round size="small" type="primary" @click="addItem">添加组件</el-button>
+            </el-button-group>
+            <div class="title">可拖拽面板demo演示</div>
+        </div>
+        <!-- <div>
             <div class="layoutJSON">
                 各组件位置信息 <code>[x, y, w, h]</code>:
                 <div class="columns">
                     <div class="layoutItem" v-for="item in layout" v-bind:key="item.i">
-                        <b>{{ item.i }}</b>: [{{ item.x }}, {{ item.y }}, {{ item.w }}, {{ item.h }}]
+                        <b>{{ item.i }}</b>: [{{ item.x }}, {{ item.y }}, {{ item.w }}, {{ item.h }}, {{ item.p }}]
                     </div>
                 </div>
             </div>
-        </div>
-        <el-button type='primary' @click='clearLayout'>重置位置信息</el-button>
-        <el-button type='primary' @click='getCookie'>获取面板位置信息</el-button>
-        <el-button type='primary' @click='setCookie'>保存面板信息</el-button>
-        <br/>
-        <div @drag="drag" @dragend="dragend" class="droppable-element" draggable="true"
-             unselectable="on">拖动到合适位置松开添加组件</div>
+        </div> -->
         <div id="content">
             <grid-layout ref="gridlayout" :layout.sync="layout"
                          :col-num="12"
@@ -25,15 +28,18 @@
                          :vertical-compact="true"
                          :use-css-transforms="true"
             >
-                <grid-item :key="item.i" v-for="item in layout"
+                <grid-item :key="item.i" v-for="item in layout" class="grid-layout-item"
                            :x="item.x"
                            :y="item.y"
                            :w="item.w"
                            :h="item.h"
                            :i="item.i"
                 >
-                    <img src="../assets/ultraman.png">
+                    <!-- <echarts></echarts> -->
+                    <el-image :src="urls[item.p]" lazy></el-image>
+                    <!-- <img src="../assets/1.png"> -->
                     <span class="text">{{ item.i }}</span>
+                    <span class="remove" @click="removeItem(item.i)">x</span>
                 </grid-item>
             </grid-layout>
         </div>
@@ -41,26 +47,60 @@
 </template>
 
 <script>
-// import ElementUI from "element-ui"
-import {GridLayout, GridItem} from "vue-grid-layout"
+// import echarts from '../components/echarts'
+import {GridLayout, GridItem} from "vue-grid-layout";
+import pic1 from "../assets/1.png"
+import pic2 from "../assets/2.png"
+import pic3 from "../assets/3.png"
+import pic4 from "../assets/4.png"
+import pic5 from "../assets/5.png"
+import pic6 from "../assets/6.png"
+import pic7 from "../assets/7.png"
+import pic8 from "../assets/8.png"
+import pic9 from "../assets/9.png"
+import pic10 from "../assets/10.png"
+import pic11 from "../assets/11.png"
+import pic12 from "../assets/12.png"
 let mouseXY = {"x": null, "y": null};
-let DragPos = {"x": null, "y": null, "w": 1, "h": 1, "i": null};
 export default {
     components: {
         GridLayout,
-        GridItem
+        GridItem,
+        // echarts
+    },
+    setup() {
+      return {}
     },
     data() {
         return {
             layout: [],
+            orgOptions: {},
+            urls: [
+                pic1,
+                pic2,
+                pic3,
+                pic4,
+                pic5,
+                pic6,
+                pic7,
+                pic8,
+                pic9,
+                pic10,
+                pic11,
+                pic12
+            ],
+            index: 0,
         }
     },
     mounted() {
+        // this.$chart.line1('chart1');
+        document.querySelector('body').setAttribute('style', 'margin:0;padding:0');
         document.addEventListener("dragover", function (e) {
             mouseXY.x = e.clientX;
             mouseXY.y = e.clientY;
         }, false);
         this.checkCookie();
+        this.index = this.layout.length;
     },
     whatch() {
       //pass
@@ -70,27 +110,6 @@ export default {
     created() {
     },
     methods: {
-        getCookie: function () {
-          var cookie1 = document.cookie.split('; ');
-          console.log('getCookie entered');
-          for(let i=0; i<(cookie1.length-2)/5; i++) {
-            // console.log("checkCookie进入循环")
-            let c0 = cookie1[i*5+2].trim();
-            let c1 = cookie1[i*5+3].trim();
-            let c2 = cookie1[i*5+4].trim();
-            let c3 = cookie1[i*5+5].trim();
-            // console.log(c0.indexOf('='));
-            console.log(c0.substring(c0.indexOf('=')+1,c0.indexOf('e')));
-            console.log(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
-            console.log(c2.substring(c2.indexOf('=')+1,c2.indexOf('e')));
-            console.log(c3.substring(c3.indexOf('=')+1,c3.indexOf('e')));
-            this.layout[i]['x'] = parseInt(c0.substring(c0.indexOf('=')+1,c0.indexOf('e')));
-            this.layout[i]['y'] = parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
-            this.layout[i]['w'] = parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
-            this.layout[i]['h'] = parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e')));
-            this.layout[i]['i'] = String(i)
-          }
-        },
         setCookie: function () {
           let d = new Date();
           d.setTime(d.getTime() + (7*24*60*60*1000));
@@ -98,46 +117,54 @@ export default {
           if(this.layout != ''){
             this.delCookie();
             for(let i = 0; i < this.layout.length; i++) {
-              // console.log("添加中")
               document.cookie = 'layout_'+ i + '_x=' + this.layout[i]['x'] + expires;
               document.cookie = 'layout_'+ i + '_y=' + this.layout[i]['y'] + expires;
               document.cookie = 'layout_'+ i + '_w=' + this.layout[i]['w'] + expires;
               document.cookie = 'layout_'+ i + '_h=' + this.layout[i]['h'] + expires;
               document.cookie = 'layout_'+ i + '=' + this.layout[i]['i'] + expires;
-              // console.log("添加成功")
+              document.cookie = 'layout_'+ i + '_p=' + this.layout[i]['p'] + expires;
             }
           } else {
-            console.log("layout is empty")
+            window.alert("layout is empty")
           }
         },
         checkCookie: function () {
           //检查cookie中是否有layout数据，如果有就读取，没有就自己初始化
           let cookie1 = document.cookie.split('; ');
           let ifHaveLayout = 0
-          //cookie1.length-2>0,表示cookie中有layout的值，下面做读取cookie中layout的值
-          if(cookie1.length-2 > 0){
+          if(cookie1.length-6 > 0){
+            this.layout = [];
             ifHaveLayout = 1
-            for(let i=0; i<(cookie1.length-2)/5; i++) {
-              let c0 = cookie1[i*5+2].trim();
-              let c1 = cookie1[i*5+3].trim();
-              let c2 = cookie1[i*5+4].trim();
-              let c3 = cookie1[i*5+5].trim();
+            for(let i=0; i<cookie1.length;i++) {
+                let ca = cookie1[i].trim();
+                if(ca.indexOf('layout_')===0){
+                    var layout_index_in_cookie = i;
+                    break
+                }
+            }
+            for(let i=0; i<(cookie1.length-layout_index_in_cookie)/6; i++) {
+              let c0 = cookie1[i*6+layout_index_in_cookie].trim();
+              let c1 = cookie1[i*6+layout_index_in_cookie+1].trim();
+              let c2 = cookie1[i*6+layout_index_in_cookie+2].trim();
+              let c3 = cookie1[i*6+layout_index_in_cookie+3].trim();
+              let c4 = cookie1[i*6+layout_index_in_cookie+5].trim();
               this.layout.push({
                 x: parseInt(c0.substring(c0.indexOf('=')+1,c0.indexOf('e'))),
                 y: parseInt(c1.substring(c1.indexOf('=')+1,c1.indexOf('e'))),
                 w: parseInt(c2.substring(c2.indexOf('=')+1,c2.indexOf('e'))),
                 h: parseInt(c3.substring(c3.indexOf('=')+1,c3.indexOf('e'))),
                 i: String(i),
+                p: parseInt(c4.substring(c4.indexOf('=')+1,c4.indexOf('e'))),
               })
             }
           }
           if (!ifHaveLayout) {
             this.layout = [
-                {"x": 0, "y": 0, "w": 4, "h": 9, "i": "0"},
-                {"x": 4, "y": 0, "w": 4, "h": 9, "i": "1"},
-                {"x": 2, "y": 9, "w": 3, "h": 7, "i": "2"},
-                {"x": 8, "y": 8, "w": 3, "h": 6, "i": "3"},
-                {"x": 8, "y": 0, "w": 4, "h": 8, "i": "4"},
+                {"x": 3, "y": 0, "w": 4, "h": 12, "i": "0", "p": 1,},
+                {"x": 0, "y": 12, "w": 4, "h": 9, "i": "1", "p": 2,},
+                {"x": 4, "y": 12, "w": 8, "h": 14, "i": "2", "p": 3},
+                {"x": 0, "y": 0, "w": 3, "h": 12, "i": "3", "p": 4},
+                {"x": 7, "y": 0, "w": 5, "h": 12,  "i": "4", "p": 5},
             ];
             this.setCookie();
           }
@@ -151,95 +178,74 @@ export default {
             document.cookie = "layout_"+i+"_w=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             document.cookie = "layout_"+i+"_h=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             document.cookie = "layout_"+i+"=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = "layout_"+i+"_p=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           }
         },
         clearLayout: function () {
           this.delCookie();
+          window.location.reload();
         },
-        // eslint-disable-next-line no-unused-vars
-        drag: function (e) {
-            let parentRect = document.getElementById('content').getBoundingClientRect();
-            let mouseInGrid = false;
-            if (((mouseXY.x > parentRect.left) && (mouseXY.x < parentRect.right)) && ((mouseXY.y > parentRect.top) && (mouseXY.y < parentRect.bottom))) {
-                mouseInGrid = true;
-                console.log
-            }
-            if (mouseInGrid === true && (this.layout.findIndex(item => item.i === 'drop')) === -1) {
-                this.layout.push({
-                    x: (this.layout.length * 2) % (this.colNum || 12),
-                    y: this.layout.length + (this.colNum || 12), // puts it at the bottom
-                    w: 1,
-                    h: 1,
-                    i: 'drop',
-                });
-            }
-            let index = this.layout.findIndex(item => item.i === 'drop');
-            if (index !== -1) {
-                try {
-                    this.$refs.gridlayout.$children[this.layout.length].$refs.item.style.display = "none";
-                } catch {
-                  //pass
-                }
-                let el = this.$refs.gridlayout.$children[index];
-                el.dragging = {"top": mouseXY.y - parentRect.top, "left": mouseXY.x - parentRect.left};
-                let new_pos = el.calcXY(mouseXY.y - parentRect.top, mouseXY.x - parentRect.left);
-                if (mouseInGrid === true) {
-                    this.$refs.gridlayout.dragEvent('dragstart', 'drop', new_pos.x, new_pos.y, 1, 1);
-                    DragPos.i = String(index);
-                    DragPos.x = this.layout[index].x;
-                    DragPos.y = this.layout[index].y;
-                }
-                if (mouseInGrid === false) {
-                    this.$refs.gridlayout.dragEvent('dragend', 'drop', new_pos.x, new_pos.y, 1, 1);
-                    this.layout = this.layout.filter(obj => obj.i !== 'drop');
-                }
-            }
+        addItem: function () {
+            this.layout.push({
+                x: (this.layout.length * 2) % (this.colNum || 12),
+                y: this.layout.length + (this.colNum || 12), // puts it at the bottom
+                w: 3,
+                h: 7,
+                i: this.index,
+                p: this.index,
+            });
+            this.index++;
         },
-        // eslint-disable-next-line no-unused-vars
-        dragend: function (e) {
-            let parentRect = document.getElementById('content').getBoundingClientRect();
-            let mouseInGrid = false;
-            if (((mouseXY.x > parentRect.left) && (mouseXY.x < parentRect.right)) && ((mouseXY.y > parentRect.top) && (mouseXY.y < parentRect.bottom))) {
-                mouseInGrid = true;
-            }
-            if (mouseInGrid === true) {
-                alert(`Dropped element props:\n${JSON.stringify(DragPos, ['x', 'y', 'w', 'h'], 2)}`);
-                this.$refs.gridlayout.dragEvent('dragend', 'drop', DragPos.x, DragPos.y, 1, 1);
-                this.layout = this.layout.filter(obj => obj.i !== 'drop');
-                // UNCOMMENT below if you want to add a grid-item
-                this.layout.push({
-                    x: DragPos.x,
-                    y: DragPos.y,
-                    w: 1,
-                    h: 3,
-                    i: DragPos.i,
-                });
-                this.$refs.gridLayout.dragEvent('dragend', DragPos.i, DragPos.x,DragPos.y,1,1);
-                try {
-                    this.$refs.gridLayout.$children[this.layout.length].$refs.item.style.display="block";
-                } catch {
-                  //pass
-                }
-            }
+        removeItem: function (val) {
+            const index = this.layout.map(item => item.i).indexOf(val);
+            this.layout.splice(index, 1);
         },
     }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+body {
+    padding:0; margin:0;
+}
+.container {
+    // background-color:#eee;
+    width:100%;
+}
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    text-align:left;
+    padding-left:2%;
+    float:left;
+}
+.btns {
+    background-color: rgb(45, 81, 105);
+    text-align: right;
+    padding-right: 30px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
 .droppable-element {
-    width: 150px;
-    text-align: center;
-    background: #fdd;
-    border: 1px solid black;
-    margin: 10px 0;
-    padding: 10px;
+    height: 60px;
+}
+.content {
+    width:100%;
+}
+.remove {
+    position: absolute;
+    right: 2px;
+    top: 0;
+    cursor: pointer;
 }
 .vue-grid-layout {
     background: #eee;
+    touch-action: none;
+    box-sizing: border-box;
 }
 .vue-grid-item:not(.vue-grid-placeholder) {
-    background: #ccc;
+    background: rgb(255, 255, 255);
     border: 1px solid black;
 }
 .vue-grid-item .resizing {
