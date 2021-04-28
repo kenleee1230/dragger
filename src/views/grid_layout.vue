@@ -171,15 +171,27 @@ export default {
         },
         delCookie: function () {
           let cookie1 = document.cookie.split('; ');
-          //for循环删除cookie中的layout数据
-          for(let i = 0;i < (cookie1.length-2) / 5; i++) {
-            document.cookie = "layout_"+i+"_x=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            document.cookie = "layout_"+i+"_y=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            document.cookie = "layout_"+i+"_w=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            document.cookie = "layout_"+i+"_h=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            document.cookie = "layout_"+i+"=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            document.cookie = "layout_"+i+"_p=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-          }
+          let ifHaveLayoutInCookie = 0;
+          // 判断cookie中是否有layout数据
+          for(let i=0; i<cookie1.length;i++) {
+                let ca = cookie1[i].trim();
+                if(ca.indexOf('layout_')===0){
+                    ifHaveLayoutInCookie = 1;
+                    var layout_index_in_cookie = i;
+                    break
+                }
+            }
+            //如果cookie中有layout数据则遍历删除
+            if(ifHaveLayoutInCookie){
+                for(let i = 0;i < (cookie1.length-layout_index_in_cookie) / 6; i++) {
+                    document.cookie = "layout_"+i+"_x=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                    document.cookie = "layout_"+i+"_y=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                    document.cookie = "layout_"+i+"_w=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                    document.cookie = "layout_"+i+"_h=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                    document.cookie = "layout_"+i+"=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                    document.cookie = "layout_"+i+"_p=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                }
+            }
         },
         clearLayout: function () {
           this.delCookie();
